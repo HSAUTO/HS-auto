@@ -69,7 +69,7 @@ footer{padding:35px 0 24px;background:#03060a;color:#8395a5;font-size:12px}.foot
 </div></section>
 <section class="section" id="estimation"><div class="wrap quote">
   <div class="quote-copy"><div class="kicker">03 — Estimation gratuite</div><h2>Combien vaut votre véhicule HS ?</h2><p>Remplissez les informations ci-dessous. Plus votre description est précise, plus nous pourrons étudier votre demande efficacement.</p><p style="color:#d6e3ec;font-size:13px">Aucune offre automatique n'est générée : chaque véhicule doit être évalué individuellement.</p></div>
-  <form class="formbox" id="estimateForm">
+  <form class="formbox" id="estimateForm" method="POST" action="https://api.web3forms.com/submit"><input type="hidden" name="access_key" value="2bae9d3c-b04b-4a99-9391-a8066d588d46"><input type="hidden" name="subject" value="Nouvelle demande de rachat - HS AUTO Nantes"><input type="hidden" name="from_name" value="HS AUTO"><input type="checkbox" name="botcheck" style="display:none" tabindex="-1" autocomplete="off">
     <div class="formgrid">
       <div class="field"><label for="brand">Marque</label><input id="brand" name="brand" placeholder="Ex. : Peugeot" required></div>
       <div class="field"><label for="model">Modèle</label><input id="model" name="model" placeholder="Ex. : 308" required></div>
@@ -82,8 +82,8 @@ footer{padding:35px 0 24px;background:#03060a;color:#8395a5;font-size:12px}.foot
       <div class="field"><label for="name">Votre prénom</label><input id="name" name="name" placeholder="Prénom" required></div>
       <div class="field"><label for="phone">Téléphone</label><input id="phone" name="phone" type="tel" placeholder="06…" required></div>
     </div>
-    <p class="formnote">En cliquant sur le bouton, votre demande sera préparée pour envoi. Le formulaire doit être relié à votre adresse e-mail ou à votre WhatsApp avant la mise en production.</p>
-    <button class="btn" type="submit">Préparer ma demande ↗</button>
+    <p class="formnote">En envoyant ce formulaire, vous acceptez d’être recontacté par HS AUTO pour l’étude de votre demande. Vos informations sont transmises via Web3Forms.</p>
+    <button class="btn" type="submit">Envoyer ma demande de rachat ↗</button>
     <p id="formMessage" class="formnote" role="status" aria-live="polite"></p>
   </form>
 </div></section>
@@ -98,6 +98,7 @@ footer{padding:35px 0 24px;background:#03060a;color:#8395a5;font-size:12px}.foot
   </div>
 </div></section>
 <section class="cta"><div class="wrap cta-inner"><div><div class="kicker">HS AUTO — Donnez une seconde issue à votre véhicule</div><h2>Votre voiture est HS ?<br>Faites le premier pas.</h2><p>Envoyez les informations de votre véhicule pour une étude sans engagement.</p></div><a class="btn" href="#estimation">Demander une estimation ↗</a></div></section>
+<section class="section alt" id="services-nantes"><div class="wrap"><div class="section-head"><div class="kicker">Rachat à Nantes</div><h2>Nos solutions de rachat automobile</h2><p>HS AUTO étudie les demandes à Nantes, Rezé, Saint-Herblain, Orvault, Vertou et dans le 44. Une offre dépend de la valeur et de l’état du véhicule.</p></div><div class="cards"><article class="card"><h3>Voiture en panne</h3><p><a href="rachat-voiture-en-panne-nantes.html">Rachat voiture en panne à Nantes →</a></p></article><article class="card"><h3>Voiture accidentée</h3><p><a href="rachat-voiture-accidentee-nantes.html">Rachat voiture accidentée à Nantes →</a></p></article><article class="card"><h3>Contrôle technique refusé</h3><p><a href="rachat-voiture-controle-technique-nantes.html">Rachat avec contrôle technique refusé →</a></p></article><article class="card"><h3>Problème mécanique</h3><p><a href="rachat-voiture-probleme-mecanique-nantes.html">Rachat moteur ou boîte HS →</a></p></article></div></div></section>
 </main>
 <footer><div class="wrap">
   <div class="foot"><strong>HS AUTO</strong><span>Rachat de véhicules hors service, en panne et accidentés.</span><a href="tel:+33773569359">07 73 56 93 59 · Appeler</a><a href="#top">Retour en haut ↑</a></div>
@@ -105,24 +106,16 @@ footer{padding:35px 0 24px;background:#03060a;color:#8395a5;font-size:12px}.foot
 </div></footer>
 <script>
 document.getElementById('yearNow').textContent = new Date().getFullYear();
-document.getElementById('estimateForm').addEventListener('submit', function(e){
-  e.preventDefault();
-  const data = new FormData(this);
-  const summary = [
-    'Demande d’estimation HS AUTO',
-    'Marque : '+(data.get('brand')||''),
-    'Modèle : '+(data.get('model')||''),
-    'Année : '+(data.get('year')||''),
-    'Kilométrage : '+(data.get('km')||''),
-    'État : '+(data.get('fault')||''),
-    'Roulant : '+(data.get('rolling')||''),
-    'Ville : '+(data.get('location')||''),
-    'Description : '+(data.get('details')||''),
-    'Contact : '+(data.get('name')||'')+' — '+(data.get('phone')||'')
-  ].join('\n');
-  const msg = document.getElementById('formMessage');
-  msg.textContent = 'La demande est prête. Pour recevoir réellement les formulaires, il faut connecter ce bouton à votre WhatsApp ou à votre adresse e-mail. Les informations saisies restent sur cette page pour le moment.';
-  console.log(summary);
+document.getElementById('estimateForm').addEventListener('submit',async function(e){
+ e.preventDefault();
+ const form=this,button=form.querySelector('button[type="submit"]'),msg=document.getElementById('formMessage');
+ button.disabled=true;msg.textContent='Envoi en cours…';
+ try{const response=await fetch(form.action,{method:'POST',body:new FormData(form),headers:{Accept:'application/json'}});
+ const result=await response.json();
+ if(response.ok&&result.success){msg.textContent='Votre demande a bien été envoyée à HS AUTO. Nous vous recontacterons.';form.reset();}
+ else{msg.textContent='L’envoi a échoué. Veuillez réessayer ou nous appeler au 07 73 56 93 59.';}
+ }catch(error){msg.textContent='Problème de connexion. Réessayez ou appelez-nous au 07 73 56 93 59.';}
+ finally{button.disabled=false;}
 });
 </script>
 </body></html>
