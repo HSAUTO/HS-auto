@@ -1,0 +1,3 @@
+User-agent: *
+Allow: /
+Sitemap: https://hsauto.github.io/HS-auto/sitemap.xml
